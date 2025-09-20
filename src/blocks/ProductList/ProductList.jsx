@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setLoading, setProducts } from '../../store/store';
-import { selectLoading, selectProducts } from '../../store/selectors';
+import { addToCart, setLoading, setProducts, selectLoading, selectProducts } from '../../store';
 
 import { ProductCard } from './blocks/ProductCard';
 import { Filters } from './blocks/Filters';
@@ -121,16 +120,20 @@ export function ProductList() {
         </div>
 
         <Filters
-          sortBy={sortBy}
+          onSelectedCategoryChange={setSelectedCategory}
           onSortByChange={setSortBy}
           selectedCategory={selectedCategory}
-          onSelectedCategoryChange={setSelectedCategory}
+          sortBy={sortBy}
         />
       </div>
 
       <div className='products'>
         {filteredProducts.map((product) => (
-          <ProductCard product={product} key={product.id} />
+          <ProductCard
+            key={product.id}
+            onAddToCartButtonClick={() => dispatch(addToCart(product))}
+            product={product}
+          />
         ))}
       </div>
     </div>

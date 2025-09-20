@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { store } from './store/store';
+import { store } from './store';
 
 import { Cart } from './blocks/Cart';
 import { Header } from './blocks/Header';

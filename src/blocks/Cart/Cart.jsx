@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectCart } from '../../store/selectors';
-import { clearCart, removeFromCart, updateQuantity } from '../../store/store';
+import { clearCart, removeFromCart, updateQuantity, selectCart } from '../../store';
+
+import { CartItem } from './blocks/CartItem';
 
 import './Cart.css';
 
@@ -12,17 +13,20 @@ export function Cart() {
   const [isOpen, setIsOpen] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
 
-  const handleRemoveItem = (id) => {
-    dispatch(removeFromCart(id));
-  };
+  const handleRemoveItem = useCallback(
+    (id) => {
+      dispatch(removeFromCart(id));
+    },
+    [dispatch]
+  );
 
-  const handleUpdateQuantity = (id, quantity) => {
+  const handleUpdateQuantity = useCallback((id, quantity) => {
     if (quantity <= 0) {
       handleRemoveItem(id);
       return;
     }
     dispatch(updateQuantity({ id, quantity }));
-  };
+  }, [dispatch, handleRemoveItem]);
 
   const handleCheckout = () => {
     setShowCheckout(true);
@@ -64,36 +68,17 @@ export function Cart() {
               <p>Корзина пуста</p>
             ) : (
               cart.map((item) => (
-                <div key={item.id} className='cart-item'>
-                  <img src={item.image} alt={item.name} />
-                  <div className='item-details'>
-                    <h4>{item.name}</h4>
-                    <p>${item.price}</p>
-                    <div className='quantity-controls'>
-                      <button
-                        onClick={() =>
-                          handleUpdateQuantity(item.id, item.quantity - 1)
-                        }
-                      >
-                        -
-                      </button>
-                      <span>{item.quantity}</span>
-                      <button
-                        onClick={() =>
-                          handleUpdateQuantity(item.id, item.quantity + 1)
-                        }
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                  <button
-                    className='remove-btn'
-                    onClick={() => handleRemoveItem(item.id)}
-                  >
-                    Удалить
-                  </button>
-                </div>
+                <CartItem
+                  key={item.id}
+                  item={item}
+                  onMinusButtonClick={() =>
+                    handleUpdateQuantity(item.id, item.quantity - 1)
+                  }
+                  onPlusButtonClick={() =>
+                    handleUpdateQuantity(item.id, item.quantity + 1)
+                  }
+                  onRemoveButtonClick={() => handleRemoveItem(item.id)}
+                />
               ))
             )}
           </div>
