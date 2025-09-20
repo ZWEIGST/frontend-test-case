@@ -31,12 +31,25 @@ const appSlice = createSlice({
       state.cart = state.cart.filter((item) => item.id !== action.payload);
     },
 
-    updateQuantity: (state, action) => {
-      const { id, quantity } = action.payload;
+    increaseQuantity: (state, action) => {
+      const id = action.payload;
+
       const item = state.cart.find((item) => item.id === id);
 
       if (item) {
-        item.quantity = quantity;
+        item.quantity += 1;
+      }
+    },
+
+    decreaseQuantity: (state, action) => {
+      const id = action.payload;
+
+      const item = state.cart.find((item) => item.id === id);
+
+      if (item?.quantity > 1) {
+        item.quantity -= 1;
+      } else if (item) {
+        state.cart = state.cart.filter((cartItem) => cartItem.id !== id);
       }
     },
 
@@ -62,7 +75,8 @@ export const {
   setProducts,
   addToCart,
   removeFromCart,
-  updateQuantity,
+  increaseQuantity,
+  decreaseQuantity,
   setUser,
   setLoading,
   setError,
