@@ -1,6 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearCart, removeFromCart, updateQuantity, selectCart } from '../../store';
+import {
+  clearCart,
+  removeFromCart,
+  increaseQuantity,
+  decreaseQuantity,
+  selectCart,
+} from '../../store';
 
 import { CartItem } from './blocks/CartItem';
 
@@ -19,14 +25,6 @@ export function Cart() {
     },
     [dispatch]
   );
-
-  const handleUpdateQuantity = useCallback((id, quantity) => {
-    if (quantity <= 0) {
-      handleRemoveItem(id);
-      return;
-    }
-    dispatch(updateQuantity({ id, quantity }));
-  }, [dispatch, handleRemoveItem]);
 
   const handleCheckout = () => {
     setShowCheckout(true);
@@ -71,12 +69,8 @@ export function Cart() {
                 <CartItem
                   key={item.id}
                   item={item}
-                  onMinusButtonClick={() =>
-                    handleUpdateQuantity(item.id, item.quantity - 1)
-                  }
-                  onPlusButtonClick={() =>
-                    handleUpdateQuantity(item.id, item.quantity + 1)
-                  }
+                  onMinusButtonClick={() => dispatch(decreaseQuantity(item.id))}
+                  onPlusButtonClick={() => dispatch(increaseQuantity(item.id))}
                   onRemoveButtonClick={() => handleRemoveItem(item.id)}
                 />
               ))
