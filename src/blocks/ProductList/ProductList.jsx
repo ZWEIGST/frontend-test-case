@@ -1,19 +1,22 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart, setLoading, setProducts } from '../../store/store';
+import { setLoading, setProducts } from '../../store/store';
 import { selectLoading, selectProducts } from '../../store/selectors';
+
+import { ProductCard } from './blocks/ProductCard';
+import { Filters } from './blocks/Filters';
 
 import './ProductList.css';
 
 export function ProductList() {
   const dispatch = useDispatch();
+
   const products = useSelector(selectProducts);
   const loading = useSelector(selectLoading);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
-  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     dispatch(setLoading(true));
@@ -101,20 +104,6 @@ export function ProductList() {
     [setSearchTerm]
   );
 
-  const handleCategoryChange = useCallback(
-    (e) => {
-      setSelectedCategory(e.target.value);
-    },
-    [setSelectedCategory]
-  );
-
-  const handleSortChange = useCallback(
-    (e) => {
-      setSortBy(e.target.value);
-    },
-    [setSortBy]
-  );
-
   if (loading) {
     return <div className='loading'>Загрузка товаров...</div>;
   }
@@ -131,44 +120,17 @@ export function ProductList() {
           />
         </div>
 
-        <div className='filter-controls'>
-          <button onClick={() => setShowFilters(!showFilters)}>
-            {showFilters ? 'Скрыть фильтры' : 'Показать фильтры'}
-          </button>
-
-          {showFilters && (
-            <>
-              <select value={selectedCategory} onChange={handleCategoryChange}>
-                <option value='all'>Все категории</option>
-                <option value='phones'>Телефоны</option>
-                <option value='laptops'>Ноутбуки</option>
-                <option value='tablets'>Планшеты</option>
-              </select>
-
-              <select value={sortBy} onChange={handleSortChange}>
-                <option value='name'>По названию</option>
-                <option value='price'>По цене</option>
-              </select>
-            </>
-          )}
-        </div>
+        <Filters
+          sortBy={sortBy}
+          onSortByChange={setSortBy}
+          selectedCategory={selectedCategory}
+          onSelectedCategoryChange={setSelectedCategory}
+        />
       </div>
 
       <div className='products'>
         {filteredProducts.map((product) => (
-          <div key={product.id} className='product-card'>
-            <img src={product.image} alt={product.name} />
-            <h3>{product.name}</h3>
-            <p>{product.description}</p>
-            <div className='price'>${product.price}</div>
-            <button
-              onClick={() => {
-                dispatch(addToCart(product));
-              }}
-            >
-              Добавить в корзину
-            </button>
-          </div>
+          <ProductCard product={product} key={product.id} />
         ))}
       </div>
     </div>
